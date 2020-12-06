@@ -1,7 +1,8 @@
 import api from './api.js'
 
 const $productList = document.querySelector('.product-list');
-
+const $price = document.querySelector('.action p strong')
+ 
 const config = { 
   method: 'GET',
   url: 'products.json',
@@ -18,8 +19,21 @@ const limitName = (name, tam) => {
   return limitedName;
 }
 
+const formatPrice = (value) => {
+
+  const unformatted = value.toString();
+  const length = unformatted.length;
+
+  const formatted = parseFloat(
+    `${unformatted.substring(0, length-2)}.${unformatted.substring(length-2)}`
+    )
+    .toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
+
+  return formatted
+}
+
 const render = (response) => {
-  console.log(response.item)
+
   response.item.forEach((item) => {
     const limitedName = limitName(item.name, 50)
     $productList.innerHTML +=
@@ -37,6 +51,14 @@ const render = (response) => {
       </li>`
   
   })
+
+  const total =  response.item.reduce((acc,item) => {
+    const value = item.bestPrice * item.quantity;
+    return acc += value
+  }, 0);
+
+  $price.textContent = formatPrice(total)
+ 
 }
 
 
